@@ -15,7 +15,7 @@ jobs:
       - name: Replace Secrets
         run: |
           # index.html 안의 __FIREBASE_CONFIG__ 문구를 실제 Secret 값으로 치환합니다.
-          sed -i "s/__FIREBASE_CONFIG__/${{ secrets.FIREBASECONFIG }}/g" index.html
+          sed -i "s/__FIREBASE_CONFIG__/${{ secrets.FIREBASE_CONFIG }}/g" index.html
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
