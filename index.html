@@ -66,8 +66,26 @@
     <div id="display">채팅을 기다리는 중...</div>
 
     <script>
-        // 1. Firebase 설정 (GitHub Actions에 의해 __FIREBASE_CONFIG__ 부분이 실제 키로 교체됩니다)
-        const firebaseConfig = __FIREBASE_CONFIG__; 
+        // 1. Firebase 설정 (GitHub Actions에 의해 const firebaseConfig = {
+  apiKey: "AIzaSyDBdeR4M_AmlgSwUgUPgLPYLVvGz21Lmk4",
+  authDomain: "chatbot-72858.firebaseapp.com",
+  databaseURL: "https://chatbot-72858-default-rtdb.firebaseio.com",
+  projectId: "chatbot-72858",
+  storageBucket: "chatbot-72858.firebasestorage.app",
+  messagingSenderId: "783790000209",
+  appId: "1:783790000209:web:c22669baa23a1c5b95d070",
+  measurementId: "G-P9VP5V9RSC"
+}; 부분이 실제 키로 교체됩니다)
+        const firebaseConfig = const firebaseConfig = {
+  apiKey: "AIzaSyDBdeR4M_AmlgSwUgUPgLPYLVvGz21Lmk4",
+  authDomain: "chatbot-72858.firebaseapp.com",
+  databaseURL: "https://chatbot-72858-default-rtdb.firebaseio.com",
+  projectId: "chatbot-72858",
+  storageBucket: "chatbot-72858.firebasestorage.app",
+  messagingSenderId: "783790000209",
+  appId: "1:783790000209:web:c22669baa23a1c5b95d070",
+  measurementId: "G-P9VP5V9RSC"
+};; 
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
