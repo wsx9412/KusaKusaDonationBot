@@ -34,4 +34,7 @@ jobs:
 
       # 2. 결과물을 gh-pages 브랜치에 배포합니다.
       - name: Deploy to GitHub Pages
-        uses
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: .        # 현재 폴더의 모든 파일을 배포합니다.
+          branch: main # 배포용 브랜치 이름입니다.
