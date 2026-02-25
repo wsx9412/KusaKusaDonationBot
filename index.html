@@ -1,49 +1,38 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <title>OBS TTS Controller</title>
-    <style>
-        body { background: transparent; font-family: sans-serif; overflow: hidden; }
-        #control-panel { background: rgba(0, 0, 0, 0.7); padding: 10px; border-radius: 8px; color: white; }
-        input { padding: 5px; width: 200px; border-radius: 4px; border: none; }
-        button { padding: 5px 10px; cursor: pointer; background: #5865F2; color: white; border: none; border-radius: 4px; }
-        /* OBS 송출 화면에서는 컨트롤 패널을 숨기고 싶을 때 사용 */
-        .obs-hidden { display: none; }
-    </style>
-</head>
-<body>
-    <div id="control-panel">
-        <input type="text" id="chatInput" placeholder="읽어줄 내용을 입력하세요...">
-        <button onclick="sendChat()">읽기</button>
-    </div>
-    <div id="display" style="color: white; font-size: 24px; text-shadow: 2px 2px 2px black;"></div>
+<script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
 
-    <script>
-        const synth = window.speechSynthesis;
+<script>
+    // 1. 본인의 Firebase 설정값으로 교체하세요
+    const firebaseConfig = __FIREBASE_CONFIG__; // 빌드 시점에 교체될 자리
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
 
-        function speak(text) {
-            if (synth.speaking) { synth.cancel(); } // 현재 읽고 있다면 취소하고 새로 읽기
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'ko-KR';
-            utterance.rate = 1.0;
-            synth.speak(utterance);
+    // 2. 메시지 전송 함수 (다른 사람이 사용)
+    function sendChat() {
+        const input = document.getElementById('chatInput');
+        const text = input.value.trim();
+        if (text) {
+            database.ref('chat').set({
+                msg: text,
+                timestamp: Date.now()
+            });
+            input.value = '';
         }
+    }
 
-        function sendChat() {
-            const input = document.getElementById('chatInput');
-            const text = input.value.trim();
-            if (text) {
-                document.getElementById('display').innerText = text; // 화면에 텍스트 표시
-                speak(text); // TTS 출력
-                input.value = ''; // 입력창 비우기
-            }
+    // 3. 메시지 수신 및 읽기 (OBS 브라우저 소스가 실행)
+    database.ref('chat').on('value', (snapshot) => {
+        const data = snapshot.val();
+        if (data && data.msg) {
+            document.getElementById('display').innerText = data.msg;
+            speak(data.msg);
         }
+    });
 
-        // 엔터키 지원
-        document.getElementById('chatInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') sendChat();
-        });
-    </script>
-</body>
-</html>
+    function speak(text) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'ko-KR';
+        window.speechSynthesis.speak(utterance);
+    }
+</script>
