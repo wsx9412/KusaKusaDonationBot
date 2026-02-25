@@ -59,4 +59,52 @@
 <body>
 
     <div id="control-panel">
-        <input type="text" id="chatInput" placeholder="읽어줄 메시지를
+        <input type="text" id="chatInput" placeholder="읽어줄 메시지를 입력하세요..." onkeypress="if(event.keyCode==13) sendChat()">
+        <button onclick="sendChat()">전송</button>
+    </div>
+
+    <div id="display">채팅을 기다리는 중...</div>
+
+    <script>
+        // 1. Firebase 설정 (GitHub Actions에 의해 __FIREBASE_CONFIG__ 부분이 실제 키로 교체됩니다)
+        const firebaseConfig = __FIREBASE_CONFIG__; 
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // 2. 메시지 전송 함수
+        function sendChat() {
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            if (text) {
+                // Firebase 실시간 데이터베이스에 메시지 저장
+                database.ref('chat').set({
+                    msg: text,
+                    timestamp: Date.now()
+                });
+                input.value = '';
+            }
+        }
+
+        // 3. 메시지 수신 및 읽기 (모든 접속자의 브라우저에서 동시 실행)
+        database.ref('chat').on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data && data.msg) {
+                // 화면에 텍스트 업데이트
+                document.getElementById('display').innerText = data.msg;
+                // TTS 읽기 실행
+                speak(data.msg);
+            }
+        });
+
+        // 4. TTS(음성 출력) 함수
+        function speak(text) {
+            // 현재 읽고 있는 음성이 있다면 취소
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'ko-KR'; // 한국어 설정
+            utterance.rate = 1.0;     // 읽기 속도
+            window.speechSynthesis.speak(utterance);
+        }
+    </script>
+</body>
+</html>
