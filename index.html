@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>OBS TTS Controller</title>
+    <style>
+        body { background: transparent; font-family: sans-serif; overflow: hidden; }
+        #control-panel { background: rgba(0, 0, 0, 0.7); padding: 10px; border-radius: 8px; color: white; }
+        input { padding: 5px; width: 200px; border-radius: 4px; border: none; }
+        button { padding: 5px 10px; cursor: pointer; background: #5865F2; color: white; border: none; border-radius: 4px; }
+        /* OBS 송출 화면에서는 컨트롤 패널을 숨기고 싶을 때 사용 */
+        .obs-hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div id="control-panel">
+        <input type="text" id="chatInput" placeholder="읽어줄 내용을 입력하세요...">
+        <button onclick="sendChat()">읽기</button>
+    </div>
+    <div id="display" style="color: white; font-size: 24px; text-shadow: 2px 2px 2px black;"></div>
+
+    <script>
+        const synth = window.speechSynthesis;
+
+        function speak(text) {
+            if (synth.speaking) { synth.cancel(); } // 현재 읽고 있다면 취소하고 새로 읽기
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'ko-KR';
+            utterance.rate = 1.0;
+            synth.speak(utterance);
+        }
+
+        function sendChat() {
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            if (text) {
+                document.getElementById('display').innerText = text; // 화면에 텍스트 표시
+                speak(text); // TTS 출력
+                input.value = ''; // 입력창 비우기
+            }
+        }
+
+        // 엔터키 지원
+        document.getElementById('chatInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendChat();
+        });
+    </script>
+</body>
+</html>
